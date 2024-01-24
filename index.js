@@ -46,7 +46,7 @@ app.post("/upload", upload.array("file"), async (req, res) => {
             fs.appendFileSync(tempFilePath, file.buffer);
 
             if (currentChunk == totalChunks - 1) {
-                // This is the last chunk, proceed with processing
+ 
                 const options = {
                     format: 'jpeg',
                     out_dir: outputDir,
@@ -57,7 +57,7 @@ app.post("/upload", upload.array("file"), async (req, res) => {
                 await pdfPoppler.convert(tempFilePath, options);
                 console.log(`Conversion successful for file: ${tempFilePath}`);
 
-                // Rename the output file
+
                 const oldFilePath = path.join(outputDir, `temp-${filename}-${i}-0`); // The original file path
                 const newFilePath = path.join(outputDir, `converted-${filename}-${i}.jpg`); // The new file path
                 fs.renameSync(oldFilePath, newFilePath);
@@ -68,7 +68,7 @@ app.post("/upload", upload.array("file"), async (req, res) => {
 
         await Promise.all(conversionPromises);
 
-        // Finalize the zip file after all files have been processed
+
         archive.finalize();
 
         return res.json({
@@ -87,7 +87,6 @@ app.post("/upload", upload.array("file"), async (req, res) => {
 app.get("/download/converted-images.zip", (req, res) => {
     const zipFilePath = "C:/Users/ariel/Downloads/converted-images.zip";
 
-    // Log the file existence and path
     console.log(`Checking file existence at path: ${zipFilePath}`);
     if (fs.existsSync(zipFilePath)) {
         console.log("File exists. Proceeding with download.");
@@ -119,7 +118,7 @@ async function startWorker() {
                 if (task) {
                     tasks.push(task);
                 } else {
-                    break; // Break if no more tasks in the queue
+                    break; 
                 }
             }
             await Promise.all(
