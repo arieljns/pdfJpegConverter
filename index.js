@@ -5,7 +5,6 @@ const multer = require("multer");
 const pdfPoppler = require("pdf-poppler");
 const fs = require("fs");
 const path = require("path");
-const Redis = require("ioredis");
 const archiver = require("archiver");
 
 const app = express();
@@ -18,19 +17,12 @@ const storage = multer.memoryStorage();
 
 const upload = multer({ storage: storage });
 
-const redis = new Redis();
+
 
 let completedTask = 0
 let totalTask = 0
 
-async function pushToQueue(queueName, data) {
-    await redis.rpush(queueName, JSON.stringify(data));
-}
 
-async function popFromQueue(queueName) {
-    const result = await redis.lpop(queueName);
-    return result ? JSON.parse(result) : null;
-}
 
 app.post("/upload", upload.array("file"), async (req, res) => {
 
@@ -127,33 +119,9 @@ app.get("/download/converted-images.zip", (req, res) => {
     }
 });
 
-const MAX_CONCURRENT_TASKS = 5;
-async function startWorker(filename) {
-    try {
-        while (true) {
-            const task = await popFromQueue("conversion_queue");
-
-            if (task) {
-                try {
-                    const { tempFilePath, options } = task;
-                    await pdfPoppler.convert(tempFilePath, options);
-                    console.log("Conversion successful for file:", tempFilePath);
-                } catch (error) {
-                    console.error("Error during conversion:", error);
-                }
-            }
-
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-    } catch (error) {
-        console.error(error);
-    }
-}
 
 
 app.listen(8080, async () => {
-    const filename = "ariel"
     console.log("Server is up and running at PORT 8080");
-    await startWorker(filename);
+
 });
