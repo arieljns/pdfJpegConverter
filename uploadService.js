@@ -42,7 +42,7 @@ app.post("/upload", upload.array("file"), async (req, res) => {
     console.log("this is the file filename:", req.body.filename)
 
     try {
-        const outputDir = `${process.env.DIRECTORY}+/petaWS-Chunk20`;
+        const outputDir = "C:/Users/ariel/Downloads/221";
         const zipFilePath = path.join(outputDir, 'converted-images.zip');
         const archive = archiver('zip');
         const output = fs.createWriteStream(zipFilePath);
@@ -151,9 +151,10 @@ async function startWorker(filename) {
     }
 }
 
+const HOST="172.18.80.1"
 
-app.listen(8080, async () => {
+app.listen(8081,HOST, async () => {
     const filename = "ariel"
-    console.log("Server is up and running at PORT 8080");
+    console.log("Server is up and running at PORT 8081");
     await startWorker(filename);
 });
